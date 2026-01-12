@@ -202,4 +202,5 @@ Ce projet est réalisé par :
 
 ---
 
-**Encadrement pédagogique :** **Madame Mously Diaw**, *Freelance Senior Data Scientist / ML Engineer*
+**Encadreur pédagogique :** **Madame Mously Diaw**, *Freelance Senior Data Scientist / ML Engineer*
+
