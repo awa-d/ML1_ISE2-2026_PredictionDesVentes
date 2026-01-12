@@ -116,21 +116,75 @@ Le projet est organisé selon les pratiques de structuration de projets Data Sci
 └── serve_webapp.py                               # Serveur pour l'application Web
 ```
 
-## 🚀 Installation et Utilisation
+## 🚀 Installation
 
 ### 1. Cloner le projet
 ```bash
-git clone [https://github.com/awa-d/favorita-sales-forecasting_ENSAE-ISE2-2026.git](https://github.com/awa-d/favorita-sales-forecasting_ENSAE-ISE2-2026.git)
+git clone https://github.com/awa-d/favorita-sales-forecasting_ENSAE-ISE2-2026.git
 cd favorita-sales-forecasting_ENSAE-ISE2-2026
 ```
-### 2. Installer les dépendances
+
+### 2. Environnement Virtuel (Recommandé)
+Il est fortement conseillé d'utiliser un environnement virtuel pour isoler les dépendances du projet.
+
+**Sur Windows :**
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+**Sur macOS / Linux :**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Installer les dépendances
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Accès aux données
+### 4. Téléchargement et Préparation des Données
+Le projet inclut un script automatisé pour télécharger les données depuis Kaggle et les prétraiter.
 ```bash
-kaggle competitions download -c favorita-grocery-sales-forecasting
+python src/preprocessing.py
+```
+*   Ce script téléchargera les fichiers dans le dossier `data/`.
+*   Il générera également les features nécessaires à l'entraînement.
+
+---
+
+## 🎮 Utilisation
+
+### 1. Entraînement du Modèle
+Pour lancer l'entraînement du modèle LightGBM (avec tracking MLflow) :
+```bash
+python src/train.py
+```
+*   Cela générera le fichier du modèle : `src/model_lgbm.txt`.
+*   Les métriques et logs seront disponibles dans `mlruns/` (visualisable avec `mlflow ui`).
+
+### 2. Démarrer l'API de Prédiction
+Lancer l'API FastAPI en local pour servir les prédictions :
+```bash
+python src/predict.py
+```
+*   **URL de l'API** : `http://localhost:8000`
+*   **Documentation interactive (Swagger)** : `http://localhost:8000/docs`
+
+### 3. Lancer l'Application Web (Dashboard)
+Pour visualiser le tableau de bord et interagir avec le modèle :
+```bash
+python serve_webapp.py
+```
+*   Le script ouvrira automatiquement votre navigateur à l'adresse : `http://localhost:8080`
+*   **Note** : Par défaut, le dashboard est configuré pour interroger l'API déployée sur Render. Pour utiliser votre API locale, modifiez la variable `API_URL` dans le fichier `serve_webapp.py`.
+
+### 4. Docker (Optionnel)
+Pour conteneuriser et lancer l'API via Docker :
+```bash
+docker build -t favorita-api .
+docker run -p 8000:8000 favorita-api
 ```
 ## Lien vers la présentation sur canva [**ICI**](https://www.canva.com/design/DAG86BK4mTc/RT29hLb2_2HkrrFvX65mfg/edit?utm_content=DAG86BK4mTc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
@@ -141,7 +195,7 @@ Ce projet est réalisé par :
 * [**Awa Diaw**](https://github.com/Awa-d)
 * [**Alioune Abdou Salam Kane**](https://github.com/AliouneKane)
 * [**Paul Balafai**](https://github.com/ruskovin)
-* [**Jeanne de la Flèche ONANENA AMANA**](https://github.com/Lafleche06)
+* [**Jeanne de la Flèche Onanena Amana**](https://github.com/Lafleche06)
 * [**Mame Balla Bousso**](https://github.com/MameBallaBousso)
 
 🎓 *Étudiants en **ISE 2**, ENSAE de Dakar*
@@ -149,4 +203,3 @@ Ce projet est réalisé par :
 ---
 
 **Encadrement pédagogique :** **Madame Mously Diaw**, *Freelance Senior Data Scientist / ML Engineer*
-
