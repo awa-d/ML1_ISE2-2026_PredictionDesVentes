@@ -23,7 +23,13 @@ ENV FAVORITA_TEST_MODE=0
 # Répertoire de travail dans le conteneur
 WORKDIR /app
 
-# --- Stage 2: Installation des dépendances ---
+# --- Stage 2: Installation des dépendances système ---
+# libgomp1 est requis pour LightGBM (OpenMP)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- Stage 3: Installation des dépendances Python ---
 # On copie d'abord requirements.txt pour profiter du cache Docker
 COPY requirements.txt .
 
@@ -31,17 +37,20 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# --- Stage 3: Copie du code source ---
+# --- Stage 4: Copie du code source ---
 # On copie uniquement les fichiers nécessaires à l'API
 COPY src/predict.py ./src/
 COPY src/preprocessing.py ./src/
 COPY src/__init__.py ./src/
 COPY src/model_lgbm.txt ./src/
 
+# Copie du frontend webapp
+COPY webapp/ ./webapp/
+
 # Création du dossier data (vide, sera monté en volume si besoin)
 RUN mkdir -p /app/data
 
-# --- Stage 4: Configuration du serveur ---
+# --- Stage 5: Configuration du serveur ---
 # Port exposé par l'API
 EXPOSE 8000
 

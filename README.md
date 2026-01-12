@@ -1,8 +1,22 @@
-ctu# 🛒 Favorita Grocery Sales Forecasting
+# 🛒 Favorita Grocery Sales Forecasting
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
+[![Render](https://img.shields.io/badge/Deployed%20on-Render-46E3B7.svg)](https://favorita-sales-api.onrender.com)
 [![Kaggle](https://img.shields.io/badge/Dataset-Kaggle-orange.svg)](https://www.kaggle.com/c/favorita-grocery-sales-forecasting)
-[![Framework](https://img.shields.io/badge/Framework-Scikit--Learn%20%2F%20XGBoost-green.svg)](https://scikit-learn.org/)
+[![LightGBM](https://img.shields.io/badge/Model-LightGBM-green.svg)](https://lightgbm.readthedocs.io/)
+
+## 🌐 Application Déployée
+
+> **🚀 Accéder à l'application en ligne :** [**Dashboard prediction**](https://ml1-ise2-2026-predictiondesventes.onrender.com/)
+
+| Endpoint | Description |
+|----------|-------------|
+| [Application Web](https://ml1-ise2-2026-predictiondesventes.onrender.com/) | Dashboard interactif de prédiction |
+| [Documentation API](https://favorita-sales-api.onrender.com/docs) | Swagger UI - Tester les endpoints |
+| [Health Check](https://favorita-sales-api.onrender.com/health) | Vérifier le statut de l'API |
+
+---
 
 ## 📝 Présentation du Projet
 Ce projet est réalisé dans le cadre de la formation **ISE à l'ENSAE**. L'objectif est de prédire les ventes unitaires de milliers d'articles vendus dans les magasins **Favorita** (une grande enseigne équatorienne).
@@ -79,9 +93,7 @@ Le projet est organisé selon les pratiques de structuration de projets Data Sci
 │
 ├── docs/                                         # Documentation et livrables
 │   ├── DEPLOYMENT.md                             # Guide de déploiement (Render/Docker)
-│   ├── MLFLOW_GUIDE.md                           # Guide MLflow
-│   ├── iml-project-description_REG09.pdf         # Sujet du projet
-│   └── PrédictionsVentesFavorita_IML2026.pdf     # Support de présentation
+│   └── MLFLOW_GUIDE.md                           # Guide MLflow
 │
 ├── notebooks/                                    # Notebooks d'exploration
 │   ├── 01_eda.ipynb                              # Analyse exploratoire (EDA)
@@ -90,7 +102,8 @@ Le projet est organisé selon les pratiques de structuration de projets Data Sci
 │
 ├── src/                                          # Code source backend/ML
 │   ├── __init__.py
-│   ├── predict.py                                # API FastAPI et inférence
+│   ├── model_lgbm.txt                            # Modèle LightGBM entraîné
+│   ├── predict.py                                # API FastAPI + Frontend
 │   ├── preprocessing.py                          # Fonctions de transformation
 │   └── train.py                                  # Script d'entraînement
 │
@@ -99,20 +112,21 @@ Le projet est organisé selon les pratiques de structuration de projets Data Sci
 │   └── test_pipeline.py                          # Tests du pipeline de données
 │
 ├── webapp/                                       # Application Frontend
-│   ├── css/                                      # Feuilles de style
-│   ├── js/                                       # Scripts JavaScript
+│   ├── css/styles.css                            # Feuilles de style
+│   ├── js/main.js                                # Scripts JavaScript
+│   ├── data/reference_data.json                  # Données de référence
 │   ├── dashboard.html                            # Dashboard de visualisation
 │   ├── index.html                                # Page d'accueil
 │   └── methodology.html                          # Page méthodologie
 │
-├── mlruns/                                       # Tracking MLflow
-├── Dockerfile                                    # Configuration Docker pour l'API
-├── Procfile                                      # Fichier de démarrage (déploiement)
+├── .gitattributes                                # Configuration Git (fins de ligne)
+├── Dockerfile                                    # Configuration Docker (API + Frontend)
+├── Procfile                                      # Fichier de démarrage Heroku/Railway
 ├── README.md                                     # Documentation générale (ce fichier)
 ├── render.yaml                                   # Configuration IaC pour Render
 ├── requirements.txt                              # Dépendances Python
 ├── runtime.txt                                   # Version Python (déploiement)
-└── serve_webapp.py                               # Serveur pour l'application Web
+└── serve_webapp.py                               # Serveur local (développement)
 ```
 
 ## 🚀 Installation
@@ -163,28 +177,39 @@ python src/train.py
 *   Cela générera le fichier du modèle : `src/model_lgbm.txt`.
 *   Les métriques et logs seront disponibles dans `mlruns/` (visualisable avec `mlflow ui`).
 
-### 2. Démarrer l'API de Prédiction
-Lancer l'API FastAPI en local pour servir les prédictions :
+### 2. Démarrer l'Application (API + Frontend)
+L'API FastAPI sert désormais à la fois le backend et le frontend :
 ```bash
-python src/predict.py
+uvicorn src.predict:app --host 0.0.0.0 --port 8000 --reload
 ```
-*   **URL de l'API** : `http://localhost:8000`
-*   **Documentation interactive (Swagger)** : `http://localhost:8000/docs`
+*   **Application Web** : `http://localhost:8000`
+*   **Documentation API (Swagger)** : `http://localhost:8000/docs`
+*   **Health Check** : `http://localhost:8000/health`
 
-### 3. Lancer l'Application Web (Dashboard)
-Pour visualiser le tableau de bord et interagir avec le modèle :
+### 3. Mode Développement (Proxy Local)
+Pour le développement avec proxy vers l'API Render :
 ```bash
 python serve_webapp.py
 ```
-*   Le script ouvrira automatiquement votre navigateur à l'adresse : `http://localhost:8080`
-*   **Note** : Par défaut, le dashboard est configuré pour interroger l'API déployée sur Render. Pour utiliser votre API locale, modifiez la variable `API_URL` dans le fichier `serve_webapp.py`.
+*   Ouvre automatiquement le navigateur sur `http://localhost:8080`
+*   Proxy automatique `/api/*` vers l'API Render
 
-### 4. Docker (Optionnel)
-Pour conteneuriser et lancer l'API via Docker :
+### 4. Docker
+Pour conteneuriser et lancer l'application complète :
 ```bash
 docker build -t favorita-api .
 docker run -p 8000:8000 favorita-api
 ```
+*   L'image inclut l'API et le frontend
+*   `libgomp1` est installé pour LightGBM
+
+### 5. Déploiement sur Render
+Le déploiement est automatisé via `render.yaml` :
+1. Push sur GitHub
+2. Render détecte automatiquement les changements
+3. Build et déploiement automatiques
+
+> 📖 Voir [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) pour le guide complet.
 ## Lien vers la présentation sur canva [**ICI**](https://www.canva.com/design/DAG86BK4mTc/RT29hLb2_2HkrrFvX65mfg/edit?utm_content=DAG86BK4mTc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 ## 👥 Membres du Groupe

@@ -17,7 +17,8 @@ mlflow>=2.9.0             # Experiment tracking & model registry
 fastapi>=0.100.0
 uvicorn[standard]>=0.20.0 # Serveur ASGI pour FastAPI (avec dependencies optimales)
 python-multipart>=0.0.6   # Upload de fichiers CSV
-pydantic>=2.0.0           # Validation des donnÃ©es
+pydantic>=2.0.0           # Validation des données
+aiofiles>=23.0.0          # Pour servir les fichiers statiques (frontend)
 
 # --- Data Download (Kaggle) ---
 opendatasets>=0.1.22

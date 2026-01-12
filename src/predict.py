@@ -24,7 +24,9 @@ import numpy as np
 import polars as pl
 import lightgbm as lgb
 from fastapi import FastAPI, HTTPException, UploadFile, File
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import io
@@ -37,6 +39,7 @@ import io
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(SCRIPT_DIR, "model_lgbm.txt")
 DATA_PATH = os.path.join(SCRIPT_DIR, "..", "data")
+WEBAPP_PATH = os.path.join(SCRIPT_DIR, "..", "webapp")
 
 # Types numériques pour le filtrage des features
 NUMERIC_TYPES = (pl.Float64, pl.Float32, pl.Int64, pl.Int32, pl.Int16, pl.Int8, 
@@ -229,6 +232,39 @@ app = FastAPI(
     description="API de prédiction des ventes pour la compétition Kaggle Favorita",
     version="1.0.0"
 )
+
+# Configuration CORS pour permettre les appels depuis le frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Montage des fichiers statiques du frontend (si disponibles)
+if os.path.exists(WEBAPP_PATH):
+    app.mount("/css", StaticFiles(directory=os.path.join(WEBAPP_PATH, "css")), name="css")
+    app.mount("/js", StaticFiles(directory=os.path.join(WEBAPP_PATH, "js")), name="js")
+    app.mount("/data", StaticFiles(directory=os.path.join(WEBAPP_PATH, "data")), name="data")
+
+@app.get("/")
+async def serve_index():
+    """Sert la page d'accueil du frontend."""
+    index_path = os.path.join(WEBAPP_PATH, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "Favorita Sales Prediction API", "docs": "/docs"}
+
+@app.get("/dashboard.html")
+async def serve_dashboard():
+    """Sert la page dashboard."""
+    return FileResponse(os.path.join(WEBAPP_PATH, "dashboard.html"))
+
+@app.get("/methodology.html")
+async def serve_methodology():
+    """Sert la page méthodologie."""
+    return FileResponse(os.path.join(WEBAPP_PATH, "methodology.html"))
 
 @app.get("/health")
 async def health_check():
