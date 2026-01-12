@@ -1,8 +1,10 @@
-ctu# 🛒 Favorita Grocery Sales Forecasting
+# 🛒 Favorita Grocery Sales Forecasting
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
+[![LightGBM](https://img.shields.io/badge/ML-LightGBM-green.svg)](https://lightgbm.readthedocs.io/)
+[![Deploy](https://img.shields.io/badge/Deploy-Render-purple.svg)](https://render.com/)
 [![Kaggle](https://img.shields.io/badge/Dataset-Kaggle-orange.svg)](https://www.kaggle.com/c/favorita-grocery-sales-forecasting)
-[![Framework](https://img.shields.io/badge/Framework-Scikit--Learn%20%2F%20XGBoost-green.svg)](https://scikit-learn.org/)
 
 ## 📝 Présentation du Projet
 Ce projet est réalisé dans le cadre de la formation **ISE à l'ENSAE**. L'objectif est de prédire les ventes unitaires de milliers d'articles vendus dans les magasins **Favorita** (une grande enseigne équatorienne).
@@ -102,18 +104,20 @@ Le projet est organisé selon les pratiques de structuration de projets Data Sci
 ├── webapp/                                       # Application Frontend
 │   ├── css/                                      # Feuilles de style
 │   ├── js/                                       # Scripts JavaScript
+│   ├── data/                                     # Données de référence (JSON)
 │   ├── dashboard.html                            # Dashboard de visualisation
 │   ├── index.html                                # Page d'accueil
 │   └── methodology.html                          # Page méthodologie
 │
 ├── mlruns/                                       # Tracking MLflow
-├── Dockerfile                                    # Configuration Docker pour l'API
+├── .gitattributes                                # Configuration Git (fins de ligne)
+├── Dockerfile                                    # Configuration Docker pour l'API + Frontend
 ├── Procfile                                      # Fichier de démarrage (déploiement)
 ├── README.md                                     # Documentation générale (ce fichier)
 ├── render.yaml                                   # Configuration IaC pour Render
 ├── requirements.txt                              # Dépendances Python
 ├── runtime.txt                                   # Version Python (déploiement)
-└── serve_webapp.py                               # Serveur pour l'application Web
+└── serve_webapp.py                               # Serveur local de développement
 ```
 
 ## 🚀 Installation
@@ -164,29 +168,90 @@ python src/train.py
 *   Cela générera le fichier du modèle : `src/model_lgbm.txt`.
 *   Les métriques et logs seront disponibles dans `mlruns/` (visualisable avec `mlflow ui`).
 
-### 2. Démarrer l'API de Prédiction
-Lancer l'API FastAPI en local pour servir les prédictions :
+### 2. Démarrer l'API + Frontend (Production)
+L'API FastAPI sert également le frontend directement :
 ```bash
-python src/predict.py
+uvicorn src.predict:app --host 0.0.0.0 --port 8000
 ```
-*   **URL de l'API** : `http://localhost:8000`
-*   **Documentation interactive (Swagger)** : `http://localhost:8000/docs`
+*   **Page d'accueil** : `http://localhost:8000`
+*   **Dashboard** : `http://localhost:8000/dashboard.html`
+*   **Méthodologie** : `http://localhost:8000/methodology.html`
+*   **Documentation API (Swagger)** : `http://localhost:8000/docs`
+*   **Health Check** : `http://localhost:8000/health`
 
-### 3. Lancer l'Application Web (Dashboard)
-Pour visualiser le tableau de bord et interagir avec le modèle :
+### 3. Serveur de Développement Local
+Pour le développement avec proxy vers l'API Render :
 ```bash
 python serve_webapp.py
 ```
 *   Le script ouvrira automatiquement votre navigateur à l'adresse : `http://localhost:8080`
-*   **Note** : Par défaut, le dashboard est configuré pour interroger l'API déployée sur Render. Pour utiliser votre API locale, modifiez la variable `API_URL` dans le fichier `serve_webapp.py`.
+*   Utilise un proxy pour rediriger les appels `/api/*` vers l'API Render.
 
-### 4. Docker (Optionnel)
-Pour conteneuriser et lancer l'API via Docker :
+### 4. Docker (Production)
+Pour conteneuriser et lancer l'application complète (API + Frontend) :
 ```bash
 docker build -t favorita-api .
 docker run -p 8000:8000 favorita-api
 ```
+
+---
+
+## 🌐 Déploiement sur Render
+
+### Architecture Unifiée
+L'application est déployée en tant que service unique sur Render :
+
+```
+https://favorita-sales-api.onrender.com
+├── /                    → Page d'accueil (Frontend)
+├── /dashboard.html      → Dashboard interactif
+├── /methodology.html    → Page méthodologie
+├── /css, /js, /data     → Fichiers statiques
+├── /predict             → API Prédiction (POST)
+├── /predict/batch       → API Prédiction Batch (POST)
+├── /health              → Health Check
+└── /docs                → Documentation Swagger
+```
+
+### Déployer
+1. Pusher le code sur GitHub
+2. Créer un service sur [render.com](https://render.com) → "New +" → "Blueprint"
+3. Sélectionner le repository (Render détecte `render.yaml`)
+4. Cliquer "Apply"
+
+Pour plus de détails, voir [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+---
 ## Lien vers la présentation sur canva [**ICI**](https://www.canva.com/design/DAG86BK4mTc/RT29hLb2_2HkrrFvX65mfg/edit?utm_content=DAG86BK4mTc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+
+---
+
+## 📡 Endpoints API
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| `GET` | `/` | Page d'accueil (Frontend) |
+| `GET` | `/health` | Vérification de santé de l'API |
+| `POST` | `/predict` | Prédiction unitaire (JSON) |
+| `POST` | `/predict/batch` | Prédiction par lot (CSV) |
+| `GET` | `/docs` | Documentation Swagger |
+
+### Exemple de Prédiction
+```bash
+curl -X POST "https://favorita-sales-api.onrender.com/predict" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "store_nbr": 1,
+    "item_nbr": 103520,
+    "date": "2017-08-16",
+    "onpromotion": 0,
+    "perishable": 1,
+    "dcoilwtico": 47.5,
+    "transactions": 1500
+  }'
+```
+
+---
 
 ## 👥 Membres du Groupe
 
