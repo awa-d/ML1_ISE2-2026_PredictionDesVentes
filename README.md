@@ -81,7 +81,7 @@ Le projet est organisé selon les pratiques de structuration de projets Data Sci
 │   ├── DEPLOYMENT.md                             # Guide de déploiement (Render/Docker)
 │   ├── MLFLOW_GUIDE.md                           # Guide MLflow
 │   ├── iml-project-description_REG09.pdf         # Sujet du projet
-│   └── presentation_favorita.pdf                 # Support de présentation
+│   └── PrédictionsVentesFavorita_IML2026.pdf     # Support de présentation
 │
 ├── notebooks/                                    # Notebooks d'exploration
 │   ├── 01_eda.ipynb                              # Analyse exploratoire (EDA)
@@ -203,3 +203,4 @@ Ce projet est réalisé par :
 ---
 
 **Encadrement pédagogique :** **Madame Mously Diaw**, *Freelance Senior Data Scientist / ML Engineer*
+
