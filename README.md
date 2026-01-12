@@ -141,7 +141,7 @@ Ce projet est réalisé par :
 * [**Awa Diaw**](https://github.com/Awa-d)
 * [**Alioune Abdou Salam Kane**](https://github.com/AliouneKane)
 * [**Paul Balafai**](https://github.com/ruskovin)
-* [**Jeanne de la Flèche Onanena Amana**](https://github.com/Lafleche06)
+* [**Jeanne de la Flèche ONANENA AMANA**](https://github.com/Lafleche06)
 * [**Mame Balla Bousso**](https://github.com/MameBallaBousso)
 
 🎓 *Étudiants en **ISE 2**, ENSAE de Dakar*
@@ -149,3 +149,4 @@ Ce projet est réalisé par :
 ---
 
 **Encadrement pédagogique :** **Madame Mously Diaw**, *Freelance Senior Data Scientist / ML Engineer*
+
