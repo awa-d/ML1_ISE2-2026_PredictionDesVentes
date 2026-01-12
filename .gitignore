@@ -38,6 +38,7 @@ ENV/
 *.ipynb_checkpoints
 
 # Data files
+*.csv
 *.parquet
 *.pkl
 *.pickle

@@ -7,8 +7,8 @@
 // CONFIGURATION
 // ==============================================================================
 const CONFIG = {
-    // Use local proxy to avoid CORS issues
-    API_URL: '/api',  // Proxied through serve_webapp.py
+    // API URL - auto-detect based on environment
+    API_URL: window.location.hostname === 'localhost' ? '/api' : '',  // Use relative URL in production
     API_URL_DIRECT: 'https://favorita-sales-api.onrender.com',  // Direct URL for fallback
     RENDER_API_KEY: 'rnd_t1Hvg8aJreD789iAZuhzLiMi2f32',
     GEMINI_API_KEY: 'AIzaSyAnYx7krhfhd5sONq3sL0Hsk_fQi0gtqP4',

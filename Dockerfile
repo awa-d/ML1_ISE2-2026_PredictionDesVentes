@@ -38,6 +38,9 @@ COPY src/preprocessing.py ./src/
 COPY src/__init__.py ./src/
 COPY src/model_lgbm.txt ./src/
 
+# Copie du frontend webapp
+COPY webapp/ ./webapp/
+
 # Création du dossier data (vide, sera monté en volume si besoin)
 RUN mkdir -p /app/data
 
