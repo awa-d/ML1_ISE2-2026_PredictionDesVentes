@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Favorita Intelligence Hub</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Favorita<strong>Hub</strong></span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Accueil</a></li>
+                <li><a href="methodology.html" class="nav-link">Méthodologie</a></li>
+                <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+            </ul>
+            <div class="api-status" title="L'API Render peut prendre 30-60s pour démarrer après inactivité">
+                <span class="status-dot checking"></span>
+                <span>Connexion...</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="dashboard-title">
+                <h1><i class="fas fa-satellite-dish"></i> Hub Opérationnel</h1>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;">
+                    Système de prédiction et recommandations IA pour l'optimisation des stocks
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="container">
+        <div class="dashboard-grid">
+            <!-- Left Panel: Prediction Form -->
+            <aside class="form-panel">
+                <h2><i class="fas fa-sliders-h"></i> Paramètres de Prédiction</h2>
+                
+                <form id="prediction-form">
+                    <!-- Date Selection -->
+                    <div class="form-group">
+                        <label for="prediction-date">
+                            <i class="fas fa-calendar-alt"></i> Date de Prédiction
+                        </label>
+                        <input 
+                            type="date" 
+                            id="prediction-date" 
+                            class="form-control" 
+                            required
+                        >
+                        <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">
+                            📅 Fenêtre: 16 - 31 Août 2017
+                        </small>
+                    </div>
+                    
+                    <!-- Store Selection -->
+                    <div class="form-group">
+                        <label for="store-select">
+                            <i class="fas fa-store"></i> Magasin
+                        </label>
+                        <select id="store-select" class="form-control" required>
+                            <option value="">Chargement...</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Item Selection -->
+                    <div class="form-group">
+                        <label for="item-select">
+                            <i class="fas fa-box-open"></i> Produit
+                        </label>
+                        <select id="item-select" class="form-control" required>
+                            <option value="">Chargement...</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Current Stock -->
+                    <div class="form-group">
+                        <label for="current-stock">
+                            <i class="fas fa-warehouse"></i> Stock Actuel
+                        </label>
+                        <div class="stock-input-group">
+                            <input 
+                                type="number" 
+                                id="current-stock" 
+                                class="form-control" 
+                                value="100"
+                                min="0"
+                                required
+                            >
+                            <span class="unit-badge">unités</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Promotion Toggle -->
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                            <input 
+                                type="checkbox" 
+                                id="onpromotion"
+                                style="width: 18px; height: 18px; accent-color: var(--accent-primary);"
+                            >
+                            <span><i class="fas fa-tags" style="color: var(--accent-primary);"></i> En promotion</span>
+                        </label>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" id="predict-btn" class="btn btn-primary btn-predict">
+                        <i class="fas fa-magic"></i> Lancer la Prédiction
+                    </button>
+                </form>
+                
+                <!-- Context Widgets -->
+                <div class="context-widgets">
+                    <div class="widget" id="store-widget">
+                        <div class="widget-header">
+                            <i class="fas fa-map-marker-alt"></i> PROFIL MAGASIN
+                        </div>
+                        <div class="widget-content">Sélectionnez un magasin</div>
+                    </div>
+                    
+                    <div class="widget" id="item-widget">
+                        <div class="widget-header">
+                            <i class="fas fa-info-circle"></i> FICHE PRODUIT
+                        </div>
+                        <div class="widget-content">Sélectionnez un produit</div>
+                    </div>
+                    
+                    <div class="widget" id="event-widget">
+                        <div class="widget-header">
+                            <i class="fas fa-calendar-star"></i> ÉVÉNEMENT DU JOUR
+                        </div>
+                        <div class="widget-content">Sélectionnez une date</div>
+                    </div>
+                </div>
+            </aside>
+            
+            <!-- Right Panel: Results -->
+            <section class="results-panel">
+                <!-- Empty State (shown before prediction) -->
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3>Prêt à analyser</h3>
+                    <p>
+                        Sélectionnez un magasin, un produit et une date, puis lancez la prédiction 
+                        pour obtenir des recommandations personnalisées par l'IA.
+                    </p>
+                    <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted);">
+                            <i class="fas fa-brain" style="color: var(--accent-primary);"></i>
+                            <span>Prédiction LightGBM</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted);">
+                            <i class="fas fa-robot" style="color: var(--accent-secondary);"></i>
+                            <span>Conseils Gemini AI</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted);">
+                            <i class="fas fa-traffic-light" style="color: var(--status-success);"></i>
+                            <span>Alertes Intelligentes</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: auto;">
+        <div class="container">
+            <div class="footer-bottom" style="border-top: none; padding-top: 0;">
+                <p>&copy; 2026 Favorita Intelligence Hub - ENSAE Dakar ISE2 | 
+                    <a href="https://favorita-sales-api.onrender.com/docs" target="_blank" style="color: var(--accent-primary);">
+                        <i class="fas fa-external-link-alt"></i> API Docs
+                    </a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
