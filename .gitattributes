@@ -1,0 +1,19 @@
+# Forcer les fins de ligne LF pour les fichiers modèle LightGBM
+# Cela évite la corruption du format lors du push/pull
+*.txt binary
+src/model_lgbm.txt binary
+
+# Fichiers Python - fins de ligne normalisées
+*.py text eol=lf
+
+# Fichiers web
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+
+# Configuration
+*.yaml text eol=lf
+*.yml text eol=lf
+Dockerfile text eol=lf
+Procfile text eol=lf
