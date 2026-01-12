@@ -183,9 +183,11 @@ def filter_numeric_features(df: pl.DataFrame) -> pl.DataFrame:
     IMPORTANT: Doit correspondre exactement aux 32 features du modèle entraîné.
     """
     # Liste exacte des features attendues par le modèle (dans l'ordre)
+    # IMPORTANT: Cette liste doit correspondre exactement aux features du modèle entraîné
     expected_features = [
         "store_nbr",
         "item_nbr",
+        "onpromotion",
         "class",
         "perishable",
         "cluster",
