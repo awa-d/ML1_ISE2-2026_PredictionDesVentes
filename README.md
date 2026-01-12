@@ -97,8 +97,7 @@ Le projet est organisé selon les pratiques de structuration de projets Data Sci
 │
 ├── notebooks/                                    # Notebooks d'exploration
 │   ├── 01_eda.ipynb                              # Analyse exploratoire (EDA)
-│   ├── 02_feature_engineering.ipynb              # Feature Engineering
-│   ├── 03_modeling.ipynb                         # Modélisation avancée
+│   ├── 02_feature_engineering_and_modeling.ipynb # Feature Engineering + Exploration des différents modèles (performances)
 │   └── favorita-full-project.ipynb               # Notebook consolidé
 │
 ├── src/                                          # Code source backend/ML
@@ -228,4 +227,5 @@ Ce projet est réalisé par :
 ---
 
 **Encadrement pédagogique :** **Madame Mously Diaw**, *Freelance Senior Data Scientist / ML Engineer*
+
 
