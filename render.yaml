@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: favorita-sales-api
+    runtime: python
+    region: frankfurt  # or oregon, singapore (choisissez la région la plus proche)
+    plan: free  # ou 'starter' pour plus de performance
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn src.predict:app --host 0.0.0.0 --port $PORT --workers 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PYTHONUNBUFFERED
+        value: 1
+    healthCheckPath: /health
+    autoDeploy: true
