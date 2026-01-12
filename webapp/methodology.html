@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Méthodologie | Favorita Intelligence Hub</title>
+    <meta name="description" content="Pipeline ML complet : Ingestion, EDA, Feature Engineering, Modeling avec MLflow, et Déploiement sur Render.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="methodology-page">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Favorita<strong>Hub</strong></span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Accueil</a></li>
+                <li><a href="methodology.html" class="nav-link active">Méthodologie</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+            </ul>
+            <a href="dashboard.html" class="nav-cta">
+                <i class="fas fa-rocket"></i> Accéder au Hub
+            </a>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <span class="page-tag"><i class="fas fa-cogs"></i> Pipeline ML</span>
+            <h1>Notre Méthodologie</h1>
+            <p>De l'ingestion des données brutes à l'API de prédiction en production. Découvrez chaque étape du pipeline Machine Learning.</p>
+        </div>
+    </section>
+
+    <!-- Pipeline Overview -->
+    <section class="pipeline-overview">
+        <div class="container">
+            <div class="pipeline-flow">
+                <div class="pipeline-step" data-step="1">
+                    <div class="step-icon"><i class="fas fa-database"></i></div>
+                    <span>Ingestion</span>
+                </div>
+                <div class="pipeline-connector"><i class="fas fa-arrow-right"></i></div>
+                <div class="pipeline-step" data-step="2">
+                    <div class="step-icon"><i class="fas fa-search"></i></div>
+                    <span>EDA</span>
+                </div>
+                <div class="pipeline-connector"><i class="fas fa-arrow-right"></i></div>
+                <div class="pipeline-step" data-step="3">
+                    <div class="step-icon"><i class="fas fa-tools"></i></div>
+                    <span>Features</span>
+                </div>
+                <div class="pipeline-connector"><i class="fas fa-arrow-right"></i></div>
+                <div class="pipeline-step" data-step="4">
+                    <div class="step-icon"><i class="fas fa-brain"></i></div>
+                    <span>Modeling</span>
+                </div>
+                <div class="pipeline-connector"><i class="fas fa-arrow-right"></i></div>
+                <div class="pipeline-step" data-step="5">
+                    <div class="step-icon"><i class="fas fa-rocket"></i></div>
+                    <span>Déploiement</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Steps -->
+    <section class="methodology-steps">
+        <div class="container">
+            
+            <!-- Step 1: Ingestion -->
+            <div class="method-card">
+                <div class="method-number">01</div>
+                <div class="method-content">
+                    <h2><i class="fas fa-database"></i> Ingestion des Données</h2>
+                    <p class="method-intro">Collecte et structuration des données brutes depuis Kaggle.</p>
+                    
+                    <div class="method-details">
+                        <div class="detail-block">
+                            <h4>Sources de Données</h4>
+                            <ul>
+                                <li><strong>train.csv</strong> - 125M transactions (2013-2017)</li>
+                                <li><strong>stores.csv</strong> - 54 magasins (ville, type, cluster)</li>
+                                <li><strong>items.csv</strong> - 4,000+ produits (famille, périssable)</li>
+                                <li><strong>oil.csv</strong> - Prix du pétrole (impact économique Équateur)</li>
+                                <li><strong>holidays_events.csv</strong> - Calendrier des fêtes</li>
+                                <li><strong>transactions.csv</strong> - Volume quotidien par magasin</li>
+                            </ul>
+                        </div>
+                        <div class="detail-block">
+                            <h4>Technologies</h4>
+                            <div class="tech-badges">
+                                <span class="tech-badge"><i class="fas fa-database"></i> Polars</span>
+                                <span class="tech-badge"><i class="fas fa-file-csv"></i> LazyFrames</span>
+                                <span class="tech-badge"><i class="fas fa-download"></i> opendatasets</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><code># Chargement optimisé avec Polars LazyFrames
+train_lf = pl.scan_csv("data/train.csv")
+stores_df = pl.read_csv("data/stores.csv")
+items_df = pl.read_csv("data/items.csv")</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: EDA -->
+            <div class="method-card">
+                <div class="method-number">02</div>
+                <div class="method-content">
+                    <h2><i class="fas fa-search"></i> Analyse Exploratoire (EDA)</h2>
+                    <p class="method-intro">Compréhension des patterns, saisonnalités et anomalies.</p>
+                    
+                    <div class="method-details">
+                        <div class="detail-block">
+                            <h4>Analyses Réalisées</h4>
+                            <ul>
+                                <li><strong>Saisonnalité</strong> - Pics hebdomadaires (dimanche) et mensuels (fin de mois)</li>
+                                <li><strong>Impact promotions</strong> - +40% de ventes en moyenne</li>
+                                <li><strong>Corrélation pétrole</strong> - Économie équatorienne dépendante</li>
+                                <li><strong>Effet jours fériés</strong> - Patterns spécifiques par région</li>
+                            </ul>
+                        </div>
+                        <div class="detail-block">
+                            <h4>Découvertes Clés</h4>
+                            <div class="insight-cards">
+                                <div class="insight">
+                                    <span class="insight-value">30%</span>
+                                    <span class="insight-label">des ventes = produits périssables</span>
+                                </div>
+                                <div class="insight">
+                                    <span class="insight-value">Quito</span>
+                                    <span class="insight-label">= 40% du volume total</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Feature Engineering -->
+            <div class="method-card">
+                <div class="method-number">03</div>
+                <div class="method-content">
+                    <h2><i class="fas fa-tools"></i> Feature Engineering</h2>
+                    <p class="method-intro">Création de variables explicatives pour capturer les signaux temporels.</p>
+                    
+                    <div class="method-details">
+                        <div class="detail-block">
+                            <h4>Features Temporelles</h4>
+                            <ul>
+                                <li><strong>Lags</strong> - Ventes J-16, J-21, J-28 (éviter fuite)</li>
+                                <li><strong>Rolling Mean/Std</strong> - Moyenne mobile 7 jours</li>
+                                <li><strong>Date Features</strong> - Jour semaine, mois, payday, fin d'année</li>
+                            </ul>
+                        </div>
+                        <div class="detail-block">
+                            <h4>Features Contextuelles</h4>
+                            <ul>
+                                <li><strong>Prix pétrole lissé</strong> - Rolling mean 7j + lag 10j</li>
+                                <li><strong>Indicateurs fériés</strong> - National, régional, local, transfert</li>
+                                <li><strong>Target Encoding</strong> - Moyenne ventes par (store, item)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><code># Lags et Rolling Features
+lf = lf.with_columns([
+    pl.col("unit_sales").shift(16).over(["store_nbr", "item_nbr"]).alias("lag_16"),
+    pl.col("unit_sales").rolling_mean(7).over(["store_nbr", "item_nbr"]).alias("rolling_mean_7"),
+])</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Modeling -->
+            <div class="method-card">
+                <div class="method-number">04</div>
+                <div class="method-content">
+                    <h2><i class="fas fa-brain"></i> Modélisation</h2>
+                    <p class="method-intro">Entraînement LightGBM avec tracking MLflow et validation temporelle.</p>
+                    
+                    <div class="method-details">
+                        <div class="detail-block">
+                            <h4>Configuration LightGBM</h4>
+                            <table class="config-table">
+                                <tr><td>Objective</td><td>regression</td></tr>
+                                <tr><td>Learning Rate</td><td>0.03</td></tr>
+                                <tr><td>Num Leaves</td><td>63</td></tr>
+                                <tr><td>Max Depth</td><td>8</td></tr>
+                                <tr><td>Regularization</td><td>L1=0.1, L2=0.1</td></tr>
+                                <tr><td>Early Stopping</td><td>100 rounds</td></tr>
+                            </table>
+                        </div>
+                        <div class="detail-block">
+                            <h4>Validation Strategy</h4>
+                            <ul>
+                                <li><strong>Fenêtre glissante</strong> - Train 7 semaines, Gap 7 jours, Valid 2 semaines</li>
+                                <li><strong>Métrique</strong> - NWRMSLE (Normalized Weighted RMSLE)</li>
+                                <li><strong>Poids</strong> - Périssables x1.25 (pénalité rupture)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mlflow-card">
+                        <div class="mlflow-header">
+                            <i class="fas fa-flask"></i>
+                            <span>MLflow Tracking</span>
+                        </div>
+                        <p>Toutes les expériences sont tracées : hyperparamètres, métriques, artefacts modèle.</p>
+                        <code>mlflow ui → http://localhost:5000</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Deployment -->
+            <div class="method-card">
+                <div class="method-number">05</div>
+                <div class="method-content">
+                    <h2><i class="fas fa-rocket"></i> Déploiement</h2>
+                    <p class="method-intro">API REST FastAPI hébergée sur Render, prête pour la production.</p>
+                    
+                    <div class="method-details">
+                        <div class="detail-block">
+                            <h4>Architecture API</h4>
+                            <ul>
+                                <li><strong>Framework</strong> - FastAPI + Uvicorn</li>
+                                <li><strong>Hébergement</strong> - Render (auto-deploy GitHub)</li>
+                                <li><strong>Endpoints</strong> - /health, /predict, /predict/batch</li>
+                            </ul>
+                        </div>
+                        <div class="detail-block">
+                            <h4>Intégration IA Générative</h4>
+                            <ul>
+                                <li><strong>Gemini Pro</strong> - Conseils prescriptifs contextuels</li>
+                                <li><strong>Structure</strong> - Retenir / Faire / Quantité</li>
+                                <li><strong>Contexte</strong> - Prédiction + Stock + Produit + Événements</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="api-demo">
+                        <div class="api-endpoint">
+                            <span class="method-badge post">POST</span>
+                            <code>https://favorita-sales-api.onrender.com/predict</code>
+                        </div>
+                        <div class="api-example">
+                            <pre><code>{
+  "store_nbr": 44,
+  "item_nbr": 103665,
+  "date": "2017-08-16"
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Testez le modèle en action</h2>
+                <p>Accédez au Dashboard pour effectuer des prédictions et recevoir des conseils IA.</p>
+                <a href="dashboard.html" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket"></i> Lancer le Dashboard
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="index.html" class="nav-logo">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Favorita<strong>Hub</strong></span>
+                    </a>
+                    <p>Projet Machine Learning - ENSAE Dakar ISE2 2026</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="methodology.html">Méthodologie</a></li>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Ressources</h4>
+                    <ul>
+                        <li><a href="https://www.kaggle.com/c/favorita-grocery-sales-forecasting" target="_blank">Dataset Kaggle</a></li>
+                        <li><a href="https://favorita-sales-api.onrender.com/docs" target="_blank">API Documentation</a></li>
+                        <li><a href="https://github.com/awa-d/favorita-sales-forecasting_ENSAE-ISE2-2026" target="_blank">GitHub</a></li>
+                    </ul>
+                </div>
+                <div class="footer-team">
+                    <h4>Équipe</h4>
+                    <p>Awa Diaw, Alioune Kane, Paul Balafai, Jeanne Onanena, Mame Balla Bousso</p>
+                    <p class="footer-supervisor">Encadré par Mme Mously Diaw</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Favorita Intelligence Hub - ENSAE Dakar</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
