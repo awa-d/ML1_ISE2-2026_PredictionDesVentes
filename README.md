@@ -144,13 +144,13 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Téléchargement et Préparation des Données
-Le projet inclut un script automatisé pour télécharger les données depuis Kaggle et les prétraiter.
+### 4. Données et Préparation
+Les données sont déjà disponibles dans le dossier `data/`.
+
+Lancez le script de prétraitement pour générer les features (seules les 10 dernières semaines sont conservées pour l'entraînement) :
 ```bash
 python src/preprocessing.py
 ```
-*   Ce script téléchargera les fichiers dans le dossier `data/`.
-*   Il générera également les features nécessaires à l'entraînement.
 
 ---
 
@@ -202,5 +202,4 @@ Ce projet est réalisé par :
 
 ---
 
-**Encadreur pédagogique :** **Madame Mously Diaw**, *Freelance Senior Data Scientist / ML Engineer*
-
+**Encadrement pédagogique :** **Madame Mously Diaw**, *Freelance Senior Data Scientist / ML Engineer*
