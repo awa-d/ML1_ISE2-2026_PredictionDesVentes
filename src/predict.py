@@ -256,7 +256,7 @@ async def serve_index():
         return FileResponse(index_path)
     return {"message": "Favorita Sales Prediction API", "docs": "/docs"}
 
-app.get("/index.html")
+@app.get("/index.html")
 async def serve_index_html():
     """Sert la page d'accueil pour l'endpoint /index.html."""
     return FileResponse(os.path.join(WEBAPP_PATH, "index.html"))
