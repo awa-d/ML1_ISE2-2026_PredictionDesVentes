@@ -379,6 +379,18 @@ def load_and_preprocess_data(base_path: str, date_range: tuple = None, filter_ye
         
     # Filtrer les ventes négatives (retours)
     train_lf = train_lf.filter(pl.col("unit_sales") >= 0)
+    
+    # Conversion de onpromotion (boolean/string -> int)
+    # La colonne peut être 'true'/'false' (string) ou True/False (boolean)
+    train_lf = train_lf.with_columns(
+        pl.when(pl.col("onpromotion").cast(pl.Utf8).str.to_lowercase() == "true")
+        .then(1)
+        .when(pl.col("onpromotion").cast(pl.Utf8).str.to_lowercase() == "false")
+        .then(0)
+        .otherwise(pl.col("onpromotion").cast(pl.Int32))
+        .fill_null(0)
+        .alias("onpromotion")
+    )
 
     # 4. Préparation des tables auxiliaires
     items = items_lf.collect()
