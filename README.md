@@ -1,10 +1,22 @@
 # 🛒 Favorita Grocery Sales Forecasting
 
-[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/API-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
-[![LightGBM](https://img.shields.io/badge/ML-LightGBM-green.svg)](https://lightgbm.readthedocs.io/)
-[![Deploy](https://img.shields.io/badge/Deploy-Render-purple.svg)](https://render.com/)
+[![Render](https://img.shields.io/badge/Deployed%20on-Render-46E3B7.svg)](https://favorita-sales-api.onrender.com)
 [![Kaggle](https://img.shields.io/badge/Dataset-Kaggle-orange.svg)](https://www.kaggle.com/c/favorita-grocery-sales-forecasting)
+[![LightGBM](https://img.shields.io/badge/Model-LightGBM-green.svg)](https://lightgbm.readthedocs.io/)
+
+## 🌐 Application Déployée
+
+> **🚀 Accéder à l'application en ligne :** [**Dashboard prediction**](https://ml1-ise2-2026-predictiondesventes.onrender.com/)
+
+| Endpoint | Description |
+|----------|-------------|
+| [Application Web](https://ml1-ise2-2026-predictiondesventes.onrender.com/) | Dashboard interactif de prédiction |
+| [Documentation API](https://favorita-sales-api.onrender.com/docs) | Swagger UI - Tester les endpoints |
+| [Health Check](https://favorita-sales-api.onrender.com/health) | Vérifier le statut de l'API |
+
+---
 
 ## 📝 Présentation du Projet
 Ce projet est réalisé dans le cadre de la formation **ISE à l'ENSAE**. L'objectif est de prédire les ventes unitaires de milliers d'articles vendus dans les magasins **Favorita** (une grande enseigne équatorienne).
@@ -81,9 +93,7 @@ Le projet est organisé selon les pratiques de structuration de projets Data Sci
 │
 ├── docs/                                         # Documentation et livrables
 │   ├── DEPLOYMENT.md                             # Guide de déploiement (Render/Docker)
-│   ├── MLFLOW_GUIDE.md                           # Guide MLflow
-│   ├── iml-project-description_REG09.pdf         # Sujet du projet
-│   └── PrédictionsVentesFavorita_IML2026.pdf     # Support de présentation
+│   └── MLFLOW_GUIDE.md                           # Guide MLflow
 │
 ├── notebooks/                                    # Notebooks d'exploration
 │   ├── 01_eda.ipynb                              # Analyse exploratoire (EDA)
@@ -93,7 +103,8 @@ Le projet est organisé selon les pratiques de structuration de projets Data Sci
 │
 ├── src/                                          # Code source backend/ML
 │   ├── __init__.py
-│   ├── predict.py                                # API FastAPI et inférence
+│   ├── model_lgbm.txt                            # Modèle LightGBM entraîné
+│   ├── predict.py                                # API FastAPI + Frontend
 │   ├── preprocessing.py                          # Fonctions de transformation
 │   └── train.py                                  # Script d'entraînement
 │
@@ -102,22 +113,21 @@ Le projet est organisé selon les pratiques de structuration de projets Data Sci
 │   └── test_pipeline.py                          # Tests du pipeline de données
 │
 ├── webapp/                                       # Application Frontend
-│   ├── css/                                      # Feuilles de style
-│   ├── js/                                       # Scripts JavaScript
-│   ├── data/                                     # Données de référence (JSON)
+│   ├── css/styles.css                            # Feuilles de style
+│   ├── js/main.js                                # Scripts JavaScript
+│   ├── data/reference_data.json                  # Données de référence
 │   ├── dashboard.html                            # Dashboard de visualisation
 │   ├── index.html                                # Page d'accueil
 │   └── methodology.html                          # Page méthodologie
 │
-├── mlruns/                                       # Tracking MLflow
 ├── .gitattributes                                # Configuration Git (fins de ligne)
-├── Dockerfile                                    # Configuration Docker pour l'API + Frontend
-├── Procfile                                      # Fichier de démarrage (déploiement)
+├── Dockerfile                                    # Configuration Docker (API + Frontend)
+├── Procfile                                      # Fichier de démarrage Heroku/Railway
 ├── README.md                                     # Documentation générale (ce fichier)
 ├── render.yaml                                   # Configuration IaC pour Render
 ├── requirements.txt                              # Dépendances Python
 ├── runtime.txt                                   # Version Python (déploiement)
-└── serve_webapp.py                               # Serveur local de développement
+└── serve_webapp.py                               # Serveur local (développement)
 ```
 
 ## 🚀 Installation
@@ -168,90 +178,40 @@ python src/train.py
 *   Cela générera le fichier du modèle : `src/model_lgbm.txt`.
 *   Les métriques et logs seront disponibles dans `mlruns/` (visualisable avec `mlflow ui`).
 
-### 2. Démarrer l'API + Frontend (Production)
-L'API FastAPI sert également le frontend directement :
+### 2. Démarrer l'Application (API + Frontend)
+L'API FastAPI sert désormais à la fois le backend et le frontend :
 ```bash
-uvicorn src.predict:app --host 0.0.0.0 --port 8000
+uvicorn src.predict:app --host 0.0.0.0 --port 8000 --reload
 ```
-*   **Page d'accueil** : `http://localhost:8000`
-*   **Dashboard** : `http://localhost:8000/dashboard.html`
-*   **Méthodologie** : `http://localhost:8000/methodology.html`
+*   **Application Web** : `http://localhost:8000`
 *   **Documentation API (Swagger)** : `http://localhost:8000/docs`
 *   **Health Check** : `http://localhost:8000/health`
 
-### 3. Serveur de Développement Local
+### 3. Mode Développement (Proxy Local)
 Pour le développement avec proxy vers l'API Render :
 ```bash
 python serve_webapp.py
 ```
-*   Le script ouvrira automatiquement votre navigateur à l'adresse : `http://localhost:8080`
-*   Utilise un proxy pour rediriger les appels `/api/*` vers l'API Render.
+*   Ouvre automatiquement le navigateur sur `http://localhost:8080`
+*   Proxy automatique `/api/*` vers l'API Render
 
-### 4. Docker (Production)
-Pour conteneuriser et lancer l'application complète (API + Frontend) :
+### 4. Docker
+Pour conteneuriser et lancer l'application complète :
 ```bash
 docker build -t favorita-api .
 docker run -p 8000:8000 favorita-api
 ```
+*   L'image inclut l'API et le frontend
+*   `libgomp1` est installé pour LightGBM
 
----
+### 5. Déploiement sur Render
+Le déploiement est automatisé via `render.yaml` :
+1. Push sur GitHub
+2. Render détecte automatiquement les changements
+3. Build et déploiement automatiques
 
-## 🌐 Déploiement sur Render
-
-### Architecture Unifiée
-L'application est déployée en tant que service unique sur Render :
-
-```
-https://favorita-sales-api.onrender.com
-├── /                    → Page d'accueil (Frontend)
-├── /dashboard.html      → Dashboard interactif
-├── /methodology.html    → Page méthodologie
-├── /css, /js, /data     → Fichiers statiques
-├── /predict             → API Prédiction (POST)
-├── /predict/batch       → API Prédiction Batch (POST)
-├── /health              → Health Check
-└── /docs                → Documentation Swagger
-```
-
-### Déployer
-1. Pusher le code sur GitHub
-2. Créer un service sur [render.com](https://render.com) → "New +" → "Blueprint"
-3. Sélectionner le repository (Render détecte `render.yaml`)
-4. Cliquer "Apply"
-
-Pour plus de détails, voir [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
-
----
+> 📖 Voir [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) pour le guide complet.
 ## Lien vers la présentation sur canva [**ICI**](https://www.canva.com/design/DAG86BK4mTc/RT29hLb2_2HkrrFvX65mfg/edit?utm_content=DAG86BK4mTc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
-
----
-
-## 📡 Endpoints API
-
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| `GET` | `/` | Page d'accueil (Frontend) |
-| `GET` | `/health` | Vérification de santé de l'API |
-| `POST` | `/predict` | Prédiction unitaire (JSON) |
-| `POST` | `/predict/batch` | Prédiction par lot (CSV) |
-| `GET` | `/docs` | Documentation Swagger |
-
-### Exemple de Prédiction
-```bash
-curl -X POST "https://favorita-sales-api.onrender.com/predict" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "store_nbr": 1,
-    "item_nbr": 103520,
-    "date": "2017-08-16",
-    "onpromotion": 0,
-    "perishable": 1,
-    "dcoilwtico": 47.5,
-    "transactions": 1500
-  }'
-```
-
----
 
 ## 👥 Membres du Groupe
 
