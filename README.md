@@ -216,11 +216,14 @@ Le déploiement est automatisé via `render.yaml` :
 
 Ce projet est réalisé par :
 
-* [**Awa Diaw**](https://github.com/Awa-d)
-* [**Alioune Abdou Salam Kane**](https://github.com/AliouneKane)
-* [**Paul Balafai**](https://github.com/ruskovin)
-* [**Jeanne de la Flèche Onanena Amana**](https://github.com/Lafleche06)
-* [**Mame Balla Bousso**](https://github.com/MameBallaBousso)
+| Photo | Nom |
+|:-----:|-----|
+| <img src="https://github.com/Awa-d.png" width="50" height="50" style="border-radius:50%"> | [**Awa Diaw**](https://github.com/Awa-d) |
+| <img src="https://github.com/AliouneKane.png" width="50" height="50" style="border-radius:50%"> | [**Alioune Abdou Salam Kane**](https://github.com/AliouneKane) |
+| <img src="https://github.com/ruskovin.png" width="50" height="50" style="border-radius:50%"> | [**Paul Balafai**](https://github.com/ruskovin) |
+| <img src="https://github.com/Lafleche06.png" width="50" height="50" style="border-radius:50%"> | [**Jeanne de la Flèche Onanena Amana**](https://github.com/Lafleche06) |
+| <img src="https://github.com/MameBallaBousso.png" width="50" height="50" style="border-radius:50%"> | [**Mame Balla Bousso**](https://github.com/MameBallaBousso) |
+
 
 🎓 *Étudiants en **ISE 2**, ENSAE de Dakar*
 
