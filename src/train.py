@@ -19,8 +19,8 @@ LGB_PARAMS = {
     "boosting_type": "gbdt",
     "learning_rate": 0.05,
     "num_leaves": 31,
-    "feature_fraction": 0.6,
-    "bagging_fraction": 0.8,
+    "feature_fraction": 0.6,  # Pour réduire le surapprentissage
+    "bagging_fraction": 0.8, 
     "bagging_freq": 1,
     "min_data_in_leaf": 100,
     "n_jobs": -1,
