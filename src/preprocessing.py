@@ -74,6 +74,7 @@ def engineer_date_features(lf: pl.LazyFrame) -> pl.LazyFrame:
             pl.col("date").dt.month().alias("month"),
             pl.col("date").dt.year().alias("year"),
             pl.col("date").dt.weekday().alias("day_of_week"),
+            pl.col("date").dt.week().alias("week_of_year"),  # AMÉLIORATION: Semaine de l'année
         ])
         .with_columns([
             (pl.col("day_of_week") >= 6).cast(pl.Int32).alias("is_weekend"),
@@ -81,9 +82,29 @@ def engineer_date_features(lf: pl.LazyFrame) -> pl.LazyFrame:
             ((pl.col("day") == 15) | (pl.col("day") == pl.col("day").max().over("month"))) 
             .cast(pl.Int32).alias("is_payday"),
             # Fin d'année (Noël/Nouvel An)
-            ((pl.col("month") == 12) & (pl.col("day") >= 20)).cast(pl.Int32).alias("is_year_end")
+            ((pl.col("month") == 12) & (pl.col("day") >= 20)).cast(pl.Int32).alias("is_year_end"),
+            # Début de mois (1-5) - AMÉLIORATION
+            (pl.col("day") <= 5).cast(pl.Int32).alias("is_month_start"),
+            # Fin de mois (26-31) - AMÉLIORATION  
+            (pl.col("day") >= 26).cast(pl.Int32).alias("is_month_end"),
         ])
     )
+
+def engineer_interaction_features(lf: pl.LazyFrame) -> pl.LazyFrame:
+    """
+    AMÉLIORATION: Ajoute des features d'interaction entre promotions et contexte temporel.
+    Ces interactions capturent des effets non-linéaires importants.
+    """
+    return lf.with_columns([
+        # Interaction Promo × Weekend (les promos ont plus d'impact le weekend)
+        (pl.col("onpromotion") * pl.col("is_weekend")).alias("promo_weekend"),
+        # Interaction Promo × Payday (les promos ont plus d'impact les jours de paie)
+        (pl.col("onpromotion") * pl.col("is_payday")).alias("promo_payday"),
+        # Interaction Promo × Jour férié
+        (pl.col("onpromotion") * pl.col("is_holiday_event")).alias("promo_holiday"),
+        # Interaction Perishable × Weekend (produits périssables vendus différemment le WE)
+        (pl.col("perishable") * pl.col("is_weekend")).alias("perishable_weekend"),
+    ])
 
 def engineer_oil_features(lf: pl.LazyFrame) -> pl.LazyFrame:
     """
@@ -125,13 +146,25 @@ def engineer_store_item_features(lf: pl.LazyFrame) -> pl.LazyFrame:
     # Note : shift/rolling en Lazy sur partitions (over)
     groups = ["store_nbr", "item_nbr"]
     return lf.sort("date").with_columns([ # Sort est crucial
+        # Lags courts (7, 14 jours) - AMÉLIORATION
+        pl.col("unit_sales").shift(7).over(groups).alias("sales_lag_7"),
+        pl.col("unit_sales").shift(14).over(groups).alias("sales_lag_14"),
+        # Lags originaux
         pl.col("unit_sales").shift(16).over(groups).alias("sales_lag_16"),
         pl.col("unit_sales").shift(21).over(groups).alias("sales_lag_21"),
         pl.col("unit_sales").shift(28).over(groups).alias("sales_lag_28"),
         
+        # Rolling means
         pl.col("unit_sales").rolling_mean(7).over(groups).alias("sales_roll_mean_7"),
+        pl.col("unit_sales").rolling_mean(14).over(groups).alias("sales_roll_mean_14"),
         pl.col("unit_sales").rolling_mean(28).over(groups).alias("sales_roll_mean_28"),
+        
+        # Rolling std
         pl.col("unit_sales").rolling_std(7).over(groups).alias("sales_roll_std_7"),
+        
+        # Rolling min/max pour capturer les extremes - AMÉLIORATION
+        pl.col("unit_sales").rolling_min(7).over(groups).alias("sales_roll_min_7"),
+        pl.col("unit_sales").rolling_max(7).over(groups).alias("sales_roll_max_7"),
     ])
 
     return lf.with_columns(exprs)
@@ -203,8 +236,8 @@ def perform_target_encoding(train_df: pl.DataFrame, valid_df: pl.DataFrame) -> t
     Applique le Target Encoding sur les colonnes catégorielles.
     Apprend sur TRAIN, applique sur TRAIN et VALID.
     """
-    # Colonnes à encoder
-    cat_cols = ["store_nbr", "item_nbr", "family", "city", "cluster", "type"]
+    # Colonnes à encoder - AMÉLIORATION: Ajout de 'state' (région/province)
+    cat_cols = ["store_nbr", "item_nbr", "family", "city", "state", "cluster", "type"]
     
     # Si les colonnes n'existent pas (car dans items/stores), on suppose qu'elles sont jointes.
     available_cols = [c for c in cat_cols if c in train_df.columns]
@@ -430,6 +463,10 @@ def load_and_preprocess_data(base_path: str, date_range: tuple = None, filter_ye
     # 9. Lags & Rolling (Part 2 du FE - Stateful)
     # Attention, cela nécessite tout l'historique dispo dans le LazyFrame
     train_joined = engineer_store_item_features(train_joined)
+    
+    # 10. Features d'interaction (AMÉLIORATION)
+    # Doit être appelé après onpromotion, is_weekend, is_payday, is_holiday_event
+    train_joined = engineer_interaction_features(train_joined)
     
     return train_joined
 
