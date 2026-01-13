@@ -435,6 +435,16 @@ async def serve_methodology():
     """Sert la page méthodologie."""
     return FileResponse(os.path.join(WEBAPP_PATH, "methodology.html"))
 
+@app.get("/login")
+async def serve_login():
+    """Sert la page d'authentification."""
+    return FileResponse(os.path.join(WEBAPP_PATH, "login.html"))
+
+@app.get("/login.html")
+async def serve_login_html():
+    """Sert la page d'authentification pour l'endpoint /login.html."""
+    return FileResponse(os.path.join(WEBAPP_PATH, "login.html"))
+
 @app.get("/health")
 async def health_check():
     """
