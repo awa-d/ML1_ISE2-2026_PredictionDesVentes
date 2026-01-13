@@ -82,7 +82,7 @@ Le projet est organisé selon les pratiques de structuration de projets Data Sci
 ```text
 .
 ├── data/                                         # Données du projet
-│   └── corporacin-favorita-grocery-sales-forecasting/  # Données brutes Kaggle
+│   └── corporacion-favorita-grocery-sales-forecasting/  # Données brutes Kaggle
 │       ├── train.csv                             # Historique des ventes
 │       ├── test.csv                              # Données de test
 │       ├── transactions.csv                      # Transactions par magasin
@@ -230,5 +230,7 @@ Ce projet est réalisé par :
 ---
 
 **Encadrement pédagogique :** **Madame Mously Diaw**, *Freelance Senior Data Scientist / ML Engineer*
+
+
 
 
