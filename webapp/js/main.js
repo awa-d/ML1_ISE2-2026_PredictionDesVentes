@@ -755,15 +755,45 @@ function updateContextWidgets() {
     
     // Update event widget
     const eventWidget = document.getElementById('event-widget');
-    if (eventWidget && date && storeNbr) {
-        const store = getStoreInfo(storeNbr);
-        const events = getHolidaysForDate(date, store.city);
-        if (events.length > 0) {
-            eventWidget.querySelector('.widget-content').innerHTML = 
-                `<span class="highlight">${events[0].description}</span>`;
-        } else {
-            eventWidget.querySelector('.widget-content').textContent = 'Jour normal';
+    const onpromotion = document.getElementById('onpromotion')?.checked;
+    
+    if (eventWidget && date) {
+        const dateObj = new Date(date + 'T00:00:00');
+        const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 6 = Saturday
+        const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+        const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+        const dayName = dayNames[dayOfWeek];
+        
+        let eventItems = [];
+        
+        // Check for holidays
+        if (storeNbr) {
+            const store = getStoreInfo(storeNbr);
+            const events = getHolidaysForDate(date, store.city);
+            if (events.length > 0) {
+                eventItems.push(`<span class="highlight">🎉 ${events[0].description}</span>`);
+            }
         }
+        
+        // Check for weekend
+        if (isWeekend) {
+            eventItems.push(`<span style="color: var(--accent-secondary);">📅 ${dayName} (Week-end)</span>`);
+        }
+        
+        // Check for promotion
+        if (onpromotion) {
+            eventItems.push(`<span style="color: var(--status-warning);">🏷️ Jour de promotion</span>`);
+        }
+        
+        // Update widget content
+        if (eventItems.length > 0) {
+            eventWidget.querySelector('.widget-content').innerHTML = eventItems.join('<br>');
+        } else {
+            eventWidget.querySelector('.widget-content').innerHTML = 
+                `<span style="color: var(--text-muted);">📆 ${dayName} - Jour normal</span>`;
+        }
+    } else if (eventWidget) {
+        eventWidget.querySelector('.widget-content').textContent = 'Sélectionnez une date';
     }
 }
 
@@ -839,6 +869,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                 element.addEventListener('change', updateContextWidgets);
             }
         });
+        
+        // Update event widget when promotion checkbox changes
+        const promotionCheckbox = document.getElementById('onpromotion');
+        if (promotionCheckbox) {
+            promotionCheckbox.addEventListener('change', updateContextWidgets);
+        }
     }
     
     // Add smooth scroll for navigation links
