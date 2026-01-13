@@ -35,8 +35,12 @@ class ProxyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
     
     def do_GET(self):
+        # Route pour la page de login (sans .html)
+        if self.path == '/login':
+            self.path = '/login.html'
+            super().do_GET()
         # Proxy API requests
-        if self.path.startswith('/api/'):
+        elif self.path.startswith('/api/'):
             self.proxy_request('GET')
         else:
             super().do_GET()
