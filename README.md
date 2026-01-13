@@ -216,7 +216,6 @@ Le déploiement est automatisé via `render.yaml` :
 
 Ce projet est réalisé par :
 
-| Photo | Nom |
 |:-----:|-----|
 | <img src="https://github.com/Awa-d.png" width="50" height="50" style="border-radius:50%"> | [**Awa Diaw**](https://github.com/Awa-d) |
 | <img src="https://github.com/AliouneKane.png" width="50" height="50" style="border-radius:50%"> | [**Alioune Abdou Salam Kane**](https://github.com/AliouneKane) |
@@ -230,5 +229,6 @@ Ce projet est réalisé par :
 ---
 
 **Encadrement pédagogique :** **Madame Mously Diaw**, *Freelance Senior Data Scientist / ML Engineer*
+
 
 
