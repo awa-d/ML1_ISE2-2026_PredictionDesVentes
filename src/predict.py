@@ -108,7 +108,7 @@ def prepare_input_for_prediction(data: dict) -> pl.DataFrame:
     Transforme les données brutes reçues en features prêtes pour le modèle.
     Applique le même pipeline que preprocessing.py (simplifié pour l'inférence).
     
-    IMPORTANT: Doit générer exactement les 32 features attendues par le modèle.
+    IMPORTANT: Doit générer exactement les features attendues par le modèle amélioré.
     """
     import datetime as dt
     
@@ -121,15 +121,26 @@ def prepare_input_for_prediction(data: dict) -> pl.DataFrame:
             pl.col("date").str.strptime(pl.Date, "%Y-%m-%d", strict=False)
         )
     
-    # Ajout des features temporelles (SANS year et is_year_end qui ne sont pas dans le modèle)
+    # Ajout des features temporelles (améliorées)
     df = df.with_columns([
         pl.col("date").dt.day().alias("day"),
         pl.col("date").dt.month().alias("month"),
         pl.col("date").dt.weekday().alias("day_of_week"),
+        pl.col("date").dt.week().alias("week_of_year"),
     ]).with_columns([
         (pl.col("day_of_week") >= 6).cast(pl.Int32).alias("is_weekend"),
         ((pl.col("day") == 15) | (pl.col("day") >= 28)).cast(pl.Int32).alias("is_payday"),
         pl.lit(0).cast(pl.Int32).alias("is_holiday_event"),
+        (pl.col("day") <= 5).cast(pl.Int32).alias("is_month_start"),
+        (pl.col("day") >= 26).cast(pl.Int32).alias("is_month_end"),
+    ])
+    
+    # Features d'interaction (AMÉLIORATION)
+    df = df.with_columns([
+        (pl.col("onpromotion") * pl.col("is_weekend")).alias("promo_weekend"),
+        (pl.col("onpromotion") * pl.col("is_payday")).alias("promo_payday"),
+        (pl.col("onpromotion") * pl.col("is_holiday_event")).alias("promo_holiday"),
+        (pl.col("perishable") * pl.col("is_weekend")).alias("perishable_weekend"),
     ])
     
     # Features Pétrole (simplifiées - en production, on utiliserait des données live)
@@ -145,7 +156,6 @@ def prepare_input_for_prediction(data: dict) -> pl.DataFrame:
     ])
     
     # Features Vacances (placeholder - en production, jointure avec la table holidays)
-    # ATTENTION: Utiliser n_reg et n_states_affected, PAS n_nat ni is_national_holiday
     df = df.with_columns([
         pl.lit(0).cast(pl.Int32).alias("n_events_total"),
         pl.lit(0).cast(pl.Int32).alias("n_reg"),
@@ -154,23 +164,29 @@ def prepare_input_for_prediction(data: dict) -> pl.DataFrame:
         pl.lit(0).cast(pl.Int32).alias("n_cities_affected"),
     ])
     
-    # Features Lags (placeholder - valeurs nulles remplacées par la médiane typique)
+    # Features Lags (améliorées - lags courts ajoutés)
     # En production, on récupérerait les vraies ventes passées depuis une BDD
     df = df.with_columns([
+        pl.lit(5.0).alias("sales_lag_7"),
+        pl.lit(5.0).alias("sales_lag_14"),
         pl.lit(5.0).alias("sales_lag_16"),
         pl.lit(5.0).alias("sales_lag_21"),
         pl.lit(5.0).alias("sales_lag_28"),
         pl.lit(5.0).alias("sales_roll_mean_7"),
+        pl.lit(5.0).alias("sales_roll_mean_14"),
         pl.lit(5.0).alias("sales_roll_mean_28"),
         pl.lit(2.0).alias("sales_roll_std_7"),
+        pl.lit(1.0).alias("sales_roll_min_7"),
+        pl.lit(10.0).alias("sales_roll_max_7"),
     ])
     
-    # Target Encoding (placeholder - en production, on chargerait les moyennes pré-calculées)
+    # Target Encoding (amélioré - state ajouté)
     df = df.with_columns([
         pl.lit(2.0).alias("store_nbr_target_enc"),
         pl.lit(1.5).alias("item_nbr_target_enc"),
         pl.lit(2.0).alias("family_target_enc"),
         pl.lit(2.0).alias("city_target_enc"),
+        pl.lit(2.0).alias("state_target_enc"),
         pl.lit(2.0).alias("cluster_target_enc"),
         pl.lit(2.0).alias("type_target_enc"),
     ])
@@ -180,42 +196,74 @@ def prepare_input_for_prediction(data: dict) -> pl.DataFrame:
 def filter_numeric_features(df: pl.DataFrame) -> pl.DataFrame:
     """
     Filtre pour ne garder que les colonnes numériques attendues par le modèle.
-    IMPORTANT: Doit correspondre exactement aux 32 features du modèle entraîné.
+    IMPORTANT: Doit correspondre exactement aux features du modèle entraîné amélioré (~45 features).
     """
-    # Liste exacte des features attendues par le modèle (dans l'ordre)
+    # Liste exacte des features attendues par le modèle AMÉLIORÉ
     # IMPORTANT: Cette liste doit correspondre exactement aux features du modèle entraîné
     expected_features = [
+        # Identifiants numériques
         "store_nbr",
         "item_nbr",
-        "onpromotion",
         "class",
-        "perishable",
         "cluster",
+        
+        # Features produit
+        "onpromotion",
+        "perishable",
+        
+        # Pétrole
         "dcoilwtico",
         "oil_smooth_7d",
         "oil_lag_10",
+        
+        # Transactions
         "transactions",
+        
+        # Vacances/événements
         "n_events_total",
         "n_reg",
         "n_loc",
         "n_states_affected",
         "n_cities_affected",
+        
+        # Features temporelles (améliorées)
         "day",
         "month",
         "day_of_week",
+        "week_of_year",
         "is_weekend",
         "is_payday",
         "is_holiday_event",
+        "is_month_start",
+        "is_month_end",
+        
+        # Features d'interaction (NOUVEAU)
+        "promo_weekend",
+        "promo_payday",
+        "promo_holiday",
+        "perishable_weekend",
+        
+        # Lags (améliorés - lags courts ajoutés)
+        "sales_lag_7",
+        "sales_lag_14",
         "sales_lag_16",
         "sales_lag_21",
         "sales_lag_28",
+        
+        # Rolling features (améliorées)
         "sales_roll_mean_7",
+        "sales_roll_mean_14",
         "sales_roll_mean_28",
         "sales_roll_std_7",
+        "sales_roll_min_7",
+        "sales_roll_max_7",
+        
+        # Target encoding (amélioré - state ajouté)
         "store_nbr_target_enc",
         "item_nbr_target_enc",
         "family_target_enc",
         "city_target_enc",
+        "state_target_enc",
         "cluster_target_enc",
         "type_target_enc"
     ]
