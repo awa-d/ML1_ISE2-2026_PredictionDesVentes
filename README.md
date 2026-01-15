@@ -212,6 +212,20 @@ Le déploiement est automatisé via `render.yaml` :
 > 📖 Voir [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) pour le guide complet.
 ## Lien vers la présentation sur canva [**ICI**](https://www.canva.com/design/DAG86BK4mTc/RT29hLb2_2HkrrFvX65mfg/edit?utm_content=DAG86BK4mTc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
+## Lien vers la documentation de la base finale, les modèles utilisés et les métriques testés [**ICI**](https://ml1-favorita-project.netlify.app/#metriques)
+
+## Perspectives et axes d’amélioration
+
+Plusieurs pistes peuvent être explorées pour améliorer la performance et la robustesse du modèle :
+
+- **Pondération par catégorie de produits** : calculer des facteurs de pondération basés sur la durée de vie des produits afin de limiter les biais de sous- ou sur-estimation. Les produits très périssables (ex. 1 jour) seraient davantage pondérés que ceux à durée de vie moyenne (6 mois) ou longue (1 an).
+
+- **Validation métier des pondérations** : intégrer l’expertise des équipes métiers à travers une approche *data-driven* combinant données historiques et retours opérationnels.
+
+- **Prévision multi-périodes** : étendre la prévision sur des horizons temporels plus longs afin d’anticiper les besoins logistiques et d’améliorer la planification.
+
+- **Intégration de la rotation des stocks** : utiliser les indicateurs de rotation pour affiner les prévisions et mieux refléter la dynamique réelle des ventes.
+
 ## 👥 Membres du Groupe
 
 Ce projet est réalisé par :
@@ -230,6 +244,7 @@ Ce projet est réalisé par :
 ---
 
 **Encadrement pédagogique :** **Madame Mously Diaw**, *Freelance Senior Data Scientist / ML Engineer*
+
 
 
 
